@@ -47,7 +47,7 @@ public class DownloadManager : MonoBehaviour
 
     public void OpenGame(string versionID)
     {
-
+	string location = "";
         System.Diagnostics.Process.Start(Application.persistentDataPath  + @"/local/" + versionID + @"/" + location, "Verified Launcher, dude did legal.. i think");
 
     }
