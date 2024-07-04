@@ -43,11 +43,12 @@ public class DownloadManager : MonoBehaviour
       string extractPath = Application.persistentDataPath + @"/local/" + versionID;
 
       System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extractPath);
+	DataSaver.DeleteFile(zipPath);
     }
 
     public void OpenGame(string versionID)
     {
-	string location = "";
+	string location = DataSaver.ReadTxt(Application.persistentDataPath  + @"/local/" + versionID + @"/exeLocation.txt")[0];
         System.Diagnostics.Process.Start(Application.persistentDataPath  + @"/local/" + versionID + @"/" + location, "Verified Launcher, dude did legal.. i think");
 
     }
