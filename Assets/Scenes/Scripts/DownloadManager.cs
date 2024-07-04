@@ -29,7 +29,7 @@ public class DownloadManager : MonoBehaviour
                 try
                 {
                     wc.DownloadFile(@"https://raw.githubusercontent.com/LeagerStudios/LeagerLauncher/main/versions/" + versionID + "-" + platform + ".zip", Application.persistentDataPath + @"/downloading/" + versionID + ".zip");
-                }+
+                }
                 catch (Exception ex)
                 {
                     Debug.Log(ex.ToString());
@@ -40,7 +40,7 @@ public class DownloadManager : MonoBehaviour
     public void UnzipGame(string versionID)
     {
       string zipPath = Application.persistentDataPath + @"/downloading/" + versionID + ".zip";
-      string extractPath = Application.persistentDataPath + @"/local/" + versionID";
+      string extractPath = Application.persistentDataPath + @"/local/" + versionID;
 
       System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extractPath);
     }
@@ -48,7 +48,8 @@ public class DownloadManager : MonoBehaviour
     public void OpenGame(string versionID)
     {
 
-        System.Diagnostics.Process.Start(Application.persistentDataPath);
+        System.Diagnostics.Process.Start(Application.persistentDataPath  + @"/local/" + versionID + @"/" + location, "Verified Launcher, dude did legal.. i think");
+
     }
 
 }
