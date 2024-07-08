@@ -2,55 +2,90 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Net;
 using UnityEngine;
 using System.IO;
+using System.IO.Compression;
 
 public class DownloadManager : MonoBehaviour
 {
-
-    void Start()
-    {
-        
-    }
-
-
-    void Update()
-    {
-        
-    }
+    public static float downloadProgress = 0f;
+    public static bool downloadCompleted = false;
+    public static bool installCompleted = false;
+    public static string error = "";
 
     public void GetVersion(string versionID, string platform)
     {
-     using (WebClient wc = new WebClient())
+        using (WebClient webClient = new WebClient())
+        {
+            string url = @"https://raw.githubusercontent.com/LeagerStudios/LeagerLauncher/main/versions/" + versionID + "-" + platform + ".zip";
+            webClient.Headers.Add("a", "a");
+            try
             {
-                wc.Headers.Add("a", "a");
-                try
+                if (!RemoteFileExists(url))
+                    throw new Exception("Version is not Available for download");
+                webClient.DownloadFileAsync(new Uri(url), MenuManager.persistentDataPath + @"/downloading/" + versionID + ".zip");
+                webClient.DownloadProgressChanged += (s, e) =>
                 {
-                    wc.DownloadFile(@"https://raw.githubusercontent.com/LeagerStudios/LeagerLauncher/main/versions/" + versionID + "-" + platform + ".zip", Application.persistentDataPath + @"/downloading/" + versionID + ".zip");
-                }
-                catch (Exception ex)
+                    downloadProgress = e.ProgressPercentage / 200f;
+                };
+                webClient.DownloadFileCompleted += (s, e) =>
                 {
-                    Debug.Log(ex.ToString());
-                }
+                    downloadCompleted = true;
+                };
             }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+        }
     }
 
     public void UnzipGame(string versionID)
     {
-      string zipPath = Application.persistentDataPath + @"/downloading/" + versionID + ".zip";
-      string extractPath = Application.persistentDataPath + @"/local/" + versionID;
+        string zipPath = MenuManager.persistentDataPath + @"/downloading/" + versionID + ".zip";
+        string extractPath = MenuManager.persistentDataPath + @"/local/" + versionID;
 
-      System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extractPath);
-	DataSaver.DeleteFile(zipPath);
+        ThreadStart unziperStart = new ThreadStart(() => ExtractToDirectoryAsync(zipPath, extractPath));
+        Thread unzipper = new Thread(unziperStart);
+        unzipper.Start();
     }
 
     public void OpenGame(string versionID)
     {
-	string location = DataSaver.ReadTxt(Application.persistentDataPath  + @"/local/" + versionID + @"/exeLocation.txt")[0];
-        System.Diagnostics.Process.Start(Application.persistentDataPath  + @"/local/" + versionID + @"/" + location, "Verified Launcher, dude did legal.. i think");
-
+        string location = DataSaver.ReadTxt(MenuManager.persistentDataPath + @"/local/" + versionID + @"/exeLocation.txt")[0];
+        System.Diagnostics.Process.Start(MenuManager.persistentDataPath + @"/local/" + versionID + @"/" + location, "Verified Launcher, dude did legal.. i think");
+        Application.Quit();
     }
 
+
+    public static void ExtractToDirectoryAsync(string zipPath, string extractPath)
+    {
+        ZipFile.ExtractToDirectory(zipPath, extractPath);
+        downloadProgress = 0.95f;
+        DataSaver.DeleteFile(zipPath);
+        downloadProgress = 1f;
+        installCompleted = true;
+    }
+
+    public bool RemoteFileExists(string url)
+    {
+        try
+        {
+         
+            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+        
+            request.Method = "HEAD";
+       
+            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+         
+            response.Close();
+            return (response.StatusCode == HttpStatusCode.OK);
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }
