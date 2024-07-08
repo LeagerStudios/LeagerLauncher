@@ -45,6 +45,11 @@ public static class DataSaver
         return Directory.GetFiles(folder).Length;
     }
 
+    public static string[] FileNamesInside(string folder)
+    {
+        return Directory.GetFiles(folder);
+    }
+
     public static void DeleteFile(string fileDirectory)
     {
         if (Directory.Exists(fileDirectory)) Directory.Delete(fileDirectory, true);

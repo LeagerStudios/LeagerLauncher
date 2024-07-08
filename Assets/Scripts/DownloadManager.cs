@@ -42,6 +42,24 @@ public class DownloadManager : MonoBehaviour
         }
     }
 
+    public string GetLatestVersion(string platform)
+    {
+        using (WebClient webClient = new WebClient())
+        {
+            string url = @"https://raw.githubusercontent.com/LeagerStudios/LeagerLauncher/main/lastGameVersion.txt";
+            webClient.Headers.Add("a", "a");
+            try
+            {
+                return webClient.DownloadString(url);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+                return null;
+            }
+        }
+    }
+
     public void UnzipGame(string versionID)
     {
         string zipPath = MenuManager.persistentDataPath + @"/downloading/" + versionID + ".zip";
@@ -59,6 +77,22 @@ public class DownloadManager : MonoBehaviour
         Application.Quit();
     }
 
+    public void DownloadLatestBackground()
+    {
+        using (WebClient webClient = new WebClient())
+        {
+            string url = @"https://raw.githubusercontent.com/LeagerStudios/LeagerLauncher/main/background.png";
+            webClient.Headers.Add("a", "a");
+            try
+            {
+                webClient.DownloadFile(new Uri(url), MenuManager.persistentDataPath + @"/background.png");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
+        }
+    }
 
     public static void ExtractToDirectoryAsync(string zipPath, string extractPath)
     {

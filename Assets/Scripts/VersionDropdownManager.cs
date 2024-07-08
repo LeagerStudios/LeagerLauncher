@@ -8,6 +8,7 @@ public class VersionDropdownManager : MonoBehaviour
 
     public Dropdown dropdown;
     public RectTransform arrowTransform;
+    public RectTransform arrowShadowTransform;
 
     void Start()
     {
@@ -17,7 +18,7 @@ public class VersionDropdownManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(dropdown.transform.childCount > 3)
+        if(dropdown.transform.childCount > 4)
         {
             arrowTransform.eulerAngles = new Vector3(0, 0, Mathf.MoveTowardsAngle(arrowTransform.eulerAngles.z, 90f, 720 * Time.deltaTime));
         }
@@ -25,6 +26,8 @@ public class VersionDropdownManager : MonoBehaviour
         {
             arrowTransform.eulerAngles = new Vector3(0, 0, Mathf.MoveTowardsAngle(arrowTransform.eulerAngles.z, -89.99f, 720 * Time.deltaTime));
         }
+
+        arrowShadowTransform.eulerAngles = arrowTransform.eulerAngles;
     }
     
 
