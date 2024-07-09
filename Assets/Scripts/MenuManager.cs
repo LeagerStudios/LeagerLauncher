@@ -15,6 +15,7 @@ public class MenuManager : MonoBehaviour
     public Dropdown dropdown;
     public RectTransform progressBar;
     public Image background;
+    public GameObject noInternet;
 
     void Start()
     {
@@ -42,18 +43,24 @@ public class MenuManager : MonoBehaviour
             string latest = downloadManager.GetLatestVersion(platform);
             if(!options.Contains(latest)) options.Insert(0, latest);
         }
-       
-        dropdown.ClearOptions();
-        dropdown.AddOptions(options);
-        dropdown.value = 0;
-        dropdown.RefreshShownValue();
-
-        UpdatePlayButton(0);
-
-        if (internet)
+        else if(options.Count > 0)
         {
-            downloadManager.DownloadLatestBackground();
-            background.sprite = LoadNewSprite(persistentDataPath + @"/background.png");
+            dropdown.ClearOptions();
+            dropdown.AddOptions(options);
+            dropdown.value = 0;
+            dropdown.RefreshShownValue();
+
+            UpdatePlayButton(0);
+
+            if (internet)
+            {
+                downloadManager.DownloadLatestBackground();
+                background.sprite = LoadNewSprite(persistentDataPath + @"/background.png");
+            }
+        }
+        else
+        {
+
         }
     }
 

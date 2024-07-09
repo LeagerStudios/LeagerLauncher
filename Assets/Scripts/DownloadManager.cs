@@ -50,7 +50,8 @@ public class DownloadManager : MonoBehaviour
             webClient.Headers.Add("a", "a");
             try
             {
-                return webClient.DownloadString(url);
+                string ver = webClient.DownloadString(url);
+                return ver;
             }
             catch (Exception ex)
             {
